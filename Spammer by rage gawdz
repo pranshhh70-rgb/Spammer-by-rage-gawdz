@@ -1,0 +1,399 @@
+--// RAGE SPAMMER | BROOKHAVEN RP (DELTA EXECUTOR READY)
+local Players = game:GetService("Players")
+local TextChatService = game:GetService("TextChatService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+
+local LocalPlayer = Players.LocalPlayer
+
+--// Clean up previous instances if re-executed
+local ParentGui = (gethui and gethui()) or CoreGui
+if ParentGui:FindFirstChild("RageSpammerUI") then
+	ParentGui.RageSpammerUI:Destroy()
+end
+
+--// Startup Sound (1837015626)
+task.spawn(function()
+	local sound = Instance.new("Sound")
+	sound.Name = "RageStartupAudio"
+	sound.SoundId = "rbxassetid://1837015626"
+	sound.Volume = 1.5
+	sound.Looped = false
+	sound.Parent = workspace
+	sound:Play()
+	game:GetService("Debris"):AddItem(sound, 25)
+end)
+
+--// ScreenGui Setup
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "RageSpammerUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = ParentGui
+
+--// Floating Toggle Button (Open/Close)
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Name = "ToggleBtn"
+ToggleBtn.Size = UDim2.new(0, 48, 0, 48)
+ToggleBtn.Position = UDim2.new(0, 18, 0.5, -24)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+ToggleBtn.Text = "RAGE"
+ToggleBtn.Font = Enum.Font.GothamBlack
+ToggleBtn.TextSize = 13
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleBtn.Active = true
+ToggleBtn.Draggable = true
+ToggleBtn.Parent = ScreenGui
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(1, 0)
+ToggleCorner.Parent = ToggleBtn
+
+local ToggleStroke = Instance.new("UIStroke")
+ToggleStroke.Thickness = 2.5
+ToggleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+ToggleStroke.Parent = ToggleBtn
+
+--// Main Panel
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 340, 0, 375)
+MainFrame.Position = UDim2.new(0.5, -170, 0.5, -187)
+MainFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 20)
+MainFrame.BackgroundTransparency = 0.08
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 14)
+MainCorner.Parent = MainFrame
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Thickness = 2.5
+MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+MainStroke.Parent = MainFrame
+
+--// Header Section
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 56)
+Header.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 14)
+HeaderCorner.Parent = Header
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, -50, 0, 26)
+TitleLabel.Position = UDim2.new(0, 14, 0, 6)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "⚡ RAGE SPAMMER"
+TitleLabel.Font = Enum.Font.GothamBlack
+TitleLabel.TextSize = 18
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Parent = Header
+
+local SubtitleLabel = Instance.new("TextLabel")
+SubtitleLabel.Size = UDim2.new(1, -50, 0, 18)
+SubtitleLabel.Position = UDim2.new(0, 14, 0, 32)
+SubtitleLabel.BackgroundTransparency = 1
+SubtitleLabel.Text = "Rage The deadly Player Of Nightmare"
+SubtitleLabel.Font = Enum.Font.GothamSemibold
+SubtitleLabel.TextSize = 11
+SubtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+SubtitleLabel.TextColor3 = Color3.fromRGB(200, 160, 255)
+SubtitleLabel.Parent = Header
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(1, -40, 0, 13)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 45, 65)
+CloseBtn.Text = "X"
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.TextSize = 14
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.Parent = Header
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 8)
+CloseCorner.Parent = CloseBtn
+
+--// Targets Container (4 Multi-Targets)
+local TargetsLabel = Instance.new("TextLabel")
+TargetsLabel.Size = UDim2.new(1, -28, 0, 20)
+TargetsLabel.Position = UDim2.new(0, 14, 0, 64)
+TargetsLabel.BackgroundTransparency = 1
+TargetsLabel.Text = "🎯 MULTI-TARGETS (4 SLOTS)"
+TargetsLabel.Font = Enum.Font.GothamBold
+TargetsLabel.TextSize = 12
+TargetsLabel.TextXAlignment = Enum.TextXAlignment.Left
+TargetsLabel.TextColor3 = Color3.fromRGB(220, 220, 235)
+TargetsLabel.Parent = MainFrame
+
+local TargetInputs = {}
+local GridFrame = Instance.new("Frame")
+GridFrame.Size = UDim2.new(1, -28, 0, 84)
+GridFrame.Position = UDim2.new(0, 14, 0, 88)
+GridFrame.BackgroundTransparency = 1
+GridFrame.Parent = MainFrame
+
+local GridLayout = Instance.new("UIGridLayout")
+GridLayout.CellSize = UDim2.new(0.48, 0, 0, 36)
+GridLayout.CellPadding = UDim2.new(0.04, 0, 0, 10)
+GridLayout.Parent = GridFrame
+
+for i = 1, 4 do
+	local box = Instance.new("TextBox")
+	box.Name = "Target" .. i
+	box.BackgroundColor3 = Color3.fromRGB(25, 25, 36)
+	box.PlaceholderText = "Target " .. i .. " Name..."
+	box.PlaceholderColor3 = Color3.fromRGB(120, 120, 140)
+	box.Text = ""
+	box.Font = Enum.Font.GothamSemibold
+	box.TextSize = 12
+	box.TextColor3 = Color3.fromRGB(255, 255, 255)
+	box.ClearTextOnFocus = false
+	box.Parent = GridFrame
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 8)
+	corner.Parent = box
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(60, 60, 85)
+	stroke.Thickness = 1
+	stroke.Parent = box
+
+	TargetInputs[i] = box
+end
+
+--// Delay & Prefix Controls
+local SettingsFrame = Instance.new("Frame")
+SettingsFrame.Size = UDim2.new(1, -28, 0, 68)
+SettingsFrame.Position = UDim2.new(0, 14, 0, 182)
+SettingsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+SettingsFrame.Parent = MainFrame
+
+local SettingsCorner = Instance.new("UICorner")
+SettingsCorner.CornerRadius = UDim.new(0, 10)
+SettingsCorner.Parent = SettingsFrame
+
+local DelayLabel = Instance.new("TextLabel")
+DelayLabel.Size = UDim2.new(0.55, 0, 0, 28)
+DelayLabel.Position = UDim2.new(0, 10, 0, 5)
+DelayLabel.BackgroundTransparency = 1
+DelayLabel.Text = "⏱️ Spam Delay (sec):"
+DelayLabel.Font = Enum.Font.GothamSemibold
+DelayLabel.TextSize = 12
+DelayLabel.TextXAlignment = Enum.TextXAlignment.Left
+DelayLabel.TextColor3 = Color3.fromRGB(220, 220, 235)
+DelayLabel.Parent = SettingsFrame
+
+local DelayBox = Instance.new("TextBox")
+DelayBox.Size = UDim2.new(0.35, 0, 0, 24)
+DelayBox.Position = UDim2.new(0.61, 0, 0, 7)
+DelayBox.BackgroundColor3 = Color3.fromRGB(32, 32, 46)
+DelayBox.Text = "1.8"
+DelayBox.Font = Enum.Font.GothamBold
+DelayBox.TextSize = 12
+DelayBox.TextColor3 = Color3.fromRGB(120, 255, 160)
+DelayBox.Parent = SettingsFrame
+
+local DelayBoxCorner = Instance.new("UICorner")
+DelayBoxCorner.CornerRadius = UDim.new(0, 6)
+DelayBoxCorner.Parent = DelayBox
+
+local PrefixToggle = Instance.new("TextButton")
+PrefixToggle.Size = UDim2.new(1, -20, 0, 26)
+PrefixToggle.Position = UDim2.new(0, 10, 0, 36)
+PrefixToggle.BackgroundColor3 = Color3.fromRGB(45, 140, 85)
+PrefixToggle.Text = "Prefix (@ Spam + 164 Length): ON"
+PrefixToggle.Font = Enum.Font.GothamBold
+PrefixToggle.TextSize = 11
+PrefixToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+PrefixToggle.Parent = SettingsFrame
+
+local PrefixCorner = Instance.new("UICorner")
+PrefixCorner.CornerRadius = UDim.new(0, 6)
+PrefixCorner.Parent = PrefixToggle
+
+--// Status Readout
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, -28, 0, 22)
+StatusLabel.Position = UDim2.new(0, 14, 0, 260)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = "Status: Ready | Length Lock: 164 Chars"
+StatusLabel.Font = Enum.Font.GothamSemibold
+StatusLabel.TextSize = 11
+StatusLabel.TextColor3 = Color3.fromRGB(160, 160, 185)
+StatusLabel.Parent = MainFrame
+
+--// Start / Stop Button
+local StartBtn = Instance.new("TextButton")
+StartBtn.Size = UDim2.new(1, -28, 0, 44)
+StartBtn.Position = UDim2.new(0, 14, 0, 288)
+StartBtn.BackgroundColor3 = Color3.fromRGB(120, 45, 220)
+StartBtn.Text = "▶ START RAGE SPAM"
+StartBtn.Font = Enum.Font.GothamBlack
+StartBtn.TextSize = 15
+StartBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+StartBtn.Parent = MainFrame
+
+local StartCorner = Instance.new("UICorner")
+StartCorner.CornerRadius = UDim.new(0, 10)
+StartCorner.Parent = StartBtn
+
+--// Footer Note
+local FooterLabel = Instance.new("TextLabel")
+FooterLabel.Size = UDim2.new(1, -28, 0, 22)
+FooterLabel.Position = UDim2.new(0, 14, 0, 340)
+FooterLabel.BackgroundTransparency = 1
+FooterLabel.Text = "Audio ID: 1837015626 | Delta Optimized"
+FooterLabel.Font = Enum.Font.Gotham
+FooterLabel.TextSize = 10
+FooterLabel.TextColor3 = Color3.fromRGB(115, 115, 135)
+FooterLabel.Parent = MainFrame
+
+--// RGB Loop Animation
+RunService.RenderStepped:Connect(function()
+	local hue = (tick() * 0.25) % 1
+	local rgbColor = Color3.fromHSV(hue, 0.85, 1)
+	MainStroke.Color = rgbColor
+	ToggleStroke.Color = rgbColor
+	TitleLabel.TextColor3 = rgbColor
+end)
+
+--// Toggle Visibility
+local isOpen = true
+local function setMenuVisible(state)
+	isOpen = state
+	MainFrame.Visible = isOpen
+end
+
+ToggleBtn.MouseButton1Click:Connect(function()
+	setMenuVisible(not isOpen)
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+	setMenuVisible(false)
+end)
+
+--// Prefix Mode Switch
+local usePrefix = true
+PrefixToggle.MouseButton1Click:Connect(function()
+	usePrefix = not usePrefix
+	if usePrefix then
+		PrefixToggle.Text = "Prefix (@ Spam + 164 Length): ON"
+		PrefixToggle.BackgroundColor3 = Color3.fromRGB(45, 140, 85)
+	else
+		PrefixToggle.Text = "Prefix (@ Spam + 164 Length): OFF"
+		PrefixToggle.BackgroundColor3 = Color3.fromRGB(140, 50, 50)
+	end
+end)
+
+--// Phrase & Emoji Pools
+local Phrases = {
+	"Tmx meh Mustang",
+	"CXDAI BY V1CTOR",
+	"Tmx meh Rage On Top",
+	"SCRIPT MADE BY V1CTORFOUNDER_RAGE"
+}
+
+local Emojis = {"😍", "😭", "🤡", "😈", "🥴"}
+
+--// Universal Chat Sender (Supports New TextChatService & Legacy Chat)
+local function sendChatMessage(msg)
+	if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+		local textChannels = TextChatService:FindFirstChild("TextChannels")
+		local rbxGeneral = textChannels and textChannels:FindFirstChild("RBXGeneral")
+		if rbxGeneral then
+			rbxGeneral:SendAsync(msg)
+		end
+	else
+		local chatEvents = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+		local sayMsg = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+		if sayMsg then
+			sayMsg:FireServer(msg, "All")
+		end
+	end
+end
+
+--// Exact 164-Character Message Builder
+local function buildSpamMessage(targetName, phraseIndex)
+	local phrase = Phrases[phraseIndex]
+	local emoji = Emojis[math.random(1, #Emojis)]
+	local cleanTarget = (targetName ~= "" and targetName) or "Target"
+
+	if usePrefix then
+		local suffix = " (" .. cleanTarget .. ") " .. phrase .. " " .. emoji
+		local suffixLen = utf8.len(suffix) or #suffix
+		local atCount = math.max(1, 164 - suffixLen)
+		local finalMsg = string.rep("@", atCount) .. suffix
+		-- Enforce exact 164 character cap
+		if (utf8.len(finalMsg) or #finalMsg) > 164 then
+			finalMsg = string.sub(finalMsg, 1, 164)
+		end
+		return finalMsg
+	else
+		local base = "(" .. cleanTarget .. ") " .. phrase .. " " .. emoji .. " "
+		local baseLen = utf8.len(base) or #base
+		local padCount = math.max(0, 164 - baseLen)
+		return base .. string.rep("@", padCount)
+	end
+end
+
+--// Main Spammer Execution Loop
+local isSpamming = false
+local phraseIdx = 1
+
+StartBtn.MouseButton1Click:Connect(function()
+	isSpamming = not isSpamming
+
+	if isSpamming then
+		StartBtn.Text = "⏹ STOP RAGE SPAM"
+		StartBtn.BackgroundColor3 = Color3.fromRGB(210, 45, 65)
+
+		task.spawn(function()
+			while isSpamming do
+				-- Collect active targets from the 4 slots
+				local activeTargets = {}
+				for i = 1, 4 do
+					local txt = TargetInputs[i].Text:match("^%s*(.-)%s*$")
+					if txt ~= "" then
+						table.insert(activeTargets, txt)
+					end
+				end
+
+				if #activeTargets == 0 then
+					table.insert(activeTargets, "Everyone")
+				end
+
+				for _, target in ipairs(activeTargets) do
+					if not isSpamming then break end
+
+					local message = buildSpamMessage(target, phraseIdx)
+					StatusLabel.Text = "Sending -> " .. target .. " (" .. (utf8.len(message) or #message) .. " chars)"
+
+					pcall(function()
+						sendChatMessage(message)
+					end)
+
+					phraseIdx = (phraseIdx % #Phrases) + 1
+
+					local delayTime = tonumber(DelayBox.Text) or 1.8
+					if delayTime < 0.5 then delayTime = 0.5 end
+					task.wait(delayTime)
+				end
+			end
+		end)
+	else
+		StartBtn.Text = "▶ START RAGE SPAM"
+		StartBtn.BackgroundColor3 = Color3.fromRGB(120, 45, 220)
+		StatusLabel.Text = "Status: Stopped | Length Lock: 164 Chars"
+	end
+end)
